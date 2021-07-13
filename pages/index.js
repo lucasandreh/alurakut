@@ -106,7 +106,7 @@ export default function Home() {
 
         <ProfileRelationsBoxWrapper>
           <h2 className="smallTitle">
-            Seguidores ({userData.followers.toLocaleString('pt-br')})
+            Seguidores ({userData.followers})
           </h2>
           <ul>
             {followers.map(pessoa => {
