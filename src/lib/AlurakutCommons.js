@@ -77,6 +77,10 @@ AlurakutMenu.Wrapper = styled.header`
     }
     a {
       font-size: 18px;
+
+      &.username {
+        display: none;
+      }
     }
     .boxLink {
       font-size: 18px;
@@ -90,6 +94,10 @@ AlurakutMenu.Wrapper = styled.header`
       margin-bottom: 8px;
       border-color: transparent;
       border-bottom-color: #ECF2FA;
+
+      &.username-hr {
+        display: none;
+      }
     }
   }
   .container {
@@ -184,10 +192,14 @@ function AlurakutMenuProfileSidebar({ githubUser }) {
 // ================================================================================================================
 // AlurakutProfileSidebarMenuDefault
 // ================================================================================================================
-export function AlurakutProfileSidebarMenuDefault() {
+export function AlurakutProfileSidebarMenuDefault({username}) {
   return (
     <AlurakutProfileSidebarMenuDefault.Wrapper>
       <nav>
+        <a className="username" style={{fontSize: "13px", fontWeight: "700", margin: 0}} href={`https://github.com/${username}`} target="_blank">
+          @{username}
+        </a>
+      <hr className="username-hr" />
         <a href="/">
           <img src={`${BASE_URL}/icons/user.svg`} />
             Perfil
@@ -228,6 +240,7 @@ AlurakutProfileSidebarMenuDefault.Wrapper = styled.div`
     align-items: center;
     justify-content: flex-start;
     text-decoration: none;
+
     img {
       width: 16px;
       height: 16px;

@@ -4,11 +4,11 @@ import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, AlurakutStyles, OrkutN
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations'; 
 import { useEffect, useState } from "react";
 
-function ProfileSidebar({ avatar }) {
+function ProfileSidebar({ avatar, username }) {
   return (
     <Box>
-      <img src={`https://github.com/${avatar}.png`} alt="Profile Image" style={{ borderRadius: '8px' }} />
-      <AlurakutProfileSidebarMenuDefault />
+      <img src={`https://github.com/${avatar}.png`} alt="Profile Image" style={{ borderRadius: '8px', marginBottom: "15px" }} />
+      <AlurakutProfileSidebarMenuDefault username={username} />
     </Box>
   )
 }
@@ -57,12 +57,17 @@ export default function Home() {
     <AlurakutMenu githubUser={usuarioAleatorio} />
     <MainGrid>
       <div className="profileArea" style={{gridArea: "profileArea"}}>
-       <ProfileSidebar avatar={usuarioAleatorio} />
+       <ProfileSidebar avatar={usuarioAleatorio} username={userData.login} />
       </div>
       <div className="welcomeArea" style={{gridArea: "welcomeArea"}}>
         <Box>
           <h1 className="title">
             Bem Vindo(a), {userData.name}
+            <p style={{
+              marginTop: "20px",
+              fontSize: "16px",
+              color: "#5A5A5A"
+            }}>{userData.bio}</p>
             <OrkutNostalgicIconSet />
           </h1>
         </Box>
