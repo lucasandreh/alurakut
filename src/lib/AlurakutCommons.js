@@ -192,12 +192,13 @@ function AlurakutMenuProfileSidebar({ githubUser }) {
 // ================================================================================================================
 // AlurakutProfileSidebarMenuDefault
 // ================================================================================================================
-export function AlurakutProfileSidebarMenuDefault({username}) {
+export function AlurakutProfileSidebarMenuDefault({name, user}) {
   return (
     <AlurakutProfileSidebarMenuDefault.Wrapper>
       <nav>
-        <a className="username" style={{fontSize: "13px", fontWeight: "700", margin: 0}} href={`https://github.com/${username}`} target="_blank">
-          @{username}
+      <hr className="username-hr" />
+        <a className="username" style={{fontSize: "13px", fontWeight: "700", margin: 0}} href={`https://github.com/${user}`} target="_blank">
+          {name}
         </a>
       <hr className="username-hr" />
         <a href="/">

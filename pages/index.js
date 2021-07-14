@@ -3,18 +3,21 @@ import Box from "../src/components/Box";
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, AlurakutStyles, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations'; 
 import { useEffect, useState } from "react";
+import ImagesList from "../src/components/ImagesList";
 
-function ProfileSidebar({ avatar, username }) {
+import images from '../images.json';
+
+function ProfileSidebar({ avatar, name, user }) {
   return (
     <Box>
-      <img src={`https://github.com/${avatar}.png`} alt="Profile Image" style={{ borderRadius: '8px', marginBottom: "15px" }} />
-      <AlurakutProfileSidebarMenuDefault username={username} />
+      <img src={`https://github.com/${avatar}.png`} alt="Profile Image" style={{ borderRadius: '8px'}} />
+      <AlurakutProfileSidebarMenuDefault name={name} user={user} />
     </Box>
   )
 }
 
 export default function Home() {
-  const usuarioAleatorio = 'llofyy';
+  // const usuarioAleatorio = 'llofyy';
   const pessoasFavoritas = [
     'luizomf', 
     'rafaballerini', 
@@ -23,10 +26,16 @@ export default function Home() {
     'filipedeschamps', 
     'diego3g'
   ];
-
+  
+  const [comunidades, setComunidades] = useState([{title: 'Eu odeio acordar cedo', image: 'https://img10.orkut.br.com/community/52cc4290facd7fa700b897d8a1dc80aa.jpg'}]);
   const [userData, setUserData] = useState({});
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
+
+  const [imageListShow, setImageListShow] = useState(false);
+  const [urlValue, setUrlValue] = useState('');
+  const [nomeDoUsuario, setNomeDoUsuario] = useState('');
+  const [usuarioAleatorio, setUsuarioAleatorio] = useState('llofyy');
 
   useEffect(() => {
     async function handleLoadFollowersAndFollowing() {
@@ -50,14 +59,20 @@ export default function Home() {
 
     handleLoadFollowersAndFollowing();
     handleUserData();
-  }, [])
+  }, [usuarioAleatorio]);
+
+  function handleShowImageList(e) {
+    e.preventDefault();
+    setImageListShow(!imageListShow);
+  }
+
 
   return (
     <>
     <AlurakutMenu githubUser={usuarioAleatorio} />
     <MainGrid>
       <div className="profileArea" style={{gridArea: "profileArea"}}>
-       <ProfileSidebar avatar={usuarioAleatorio} username={userData.login} />
+       <ProfileSidebar avatar={usuarioAleatorio} name={userData.name} user={usuarioAleatorio} />
       </div>
       <div className="welcomeArea" style={{gridArea: "welcomeArea"}}>
         <Box>
@@ -71,9 +86,74 @@ export default function Home() {
             <OrkutNostalgicIconSet />
           </h1>
         </Box>
+           
+        <Box>
+          <h2 className="subTitle">O que você deseja fazer?</h2>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <input 
+                placeholder="Adicione o @ do usuário" 
+                name="title" 
+                aria-label="Adicione o @ do usuário"
+                type="text"
+                value={nomeDoUsuario}
+                onChange={(e) => setNomeDoUsuario(e.target.value)} 
+              />
+
+              <button onClick={() => nomeDoUsuario === '' ? setUsuarioAleatorio('llofyy') : setUsuarioAleatorio(nomeDoUsuario)} style={{ marginBottom: "10px" }}>
+                  Mudar usuário
+              </button>
+            </div>
+            <hr />
+          <form onSubmit={e => {
+            e.preventDefault();
+            const dadosDoForm = new FormData(e.target);
+            const comunidade = {
+              title: dadosDoForm.get('title'), 
+              image: dadosDoForm.get('image')
+            }
+            setComunidades([...comunidades, comunidade]);
+          }}>
+            <div>
+              <input 
+                placeholder="Qual vai ser o nome da comunidade?" 
+                name="title" 
+                aria-label="Qual vai ser o nome da comunidade?"
+                type="text" 
+              />
+            </div>
+            <div>
+              <input 
+                placeholder="Coloque uma URL para usarmos de capa" 
+                name="image" 
+                aria-label="Coloque uma URL para usarmos de capa"
+                type="text"
+                onChange={(e) => setUrlValue(e.target.value)}
+                value={urlValue} 
+              />
+            </div>
+            <button>
+              Criar comunidade
+            </button>
+            <button onClick={handleShowImageList} style={{ marginLeft: "10px" }}>
+              {!imageListShow ? 'Mostrar lista de imagens' : 'Esconder lista de imagens'}
+            </button>
+          </form>
+        </Box>
+        {!imageListShow ? '' : 
+          <Box>
+            <h2 className="subTitle">Escolha uma imagem padrão para sua comunidade:</h2>
+            <ImagesList>
+            {images.map(image => {
+                return (
+                    <img onClick={e => setUrlValue(e.target.src)} src={image} alt="Imagem padrão de comunidade"/>
+                )
+            })}
+            </ImagesList>
+          </Box>
+        }
       </div>
       <div className="profileRelationsArea" style={{gridArea: "profileRelationsArea"}}>
-        <ProfileRelationsBoxWrapper>
+        {/* <ProfileRelationsBoxWrapper>
           <h2 className="smallTitle">
             Pessoas da Comunidade ({pessoasFavoritas.length})
           </h2>
@@ -89,7 +169,7 @@ export default function Home() {
               )
             })}
           </ul>
-        </ProfileRelationsBoxWrapper>
+        </ProfileRelationsBoxWrapper> */}
 
         <ProfileRelationsBoxWrapper>
           <h2 className="smallTitle">
@@ -120,6 +200,24 @@ export default function Home() {
                   <a href={`/users/${pessoa.login}`}>
                   <img src={`https://github.com/${pessoa.login}.png`} />
                   <span>{pessoa.login}</span>
+                </a>
+                </li>
+              )
+            })}
+          </ul>
+        </ProfileRelationsBoxWrapper>
+
+        <ProfileRelationsBoxWrapper>
+          <h2 className="smallTitle">
+            Comunidades ({comunidades.length})
+          </h2>
+          <ul>
+            {comunidades.map(comunidade => {
+              return (
+                <li key={comunidade.title}>
+                  <a href={`/users/${comunidade.title}`}>
+                  <img src={comunidade.image} />
+                  <span>{comunidade.title}</span>
                 </a>
                 </li>
               )
