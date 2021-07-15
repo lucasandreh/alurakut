@@ -1,12 +1,12 @@
 import MainGrid from "../src/components/MainGrid";
 import Box from "../src/components/Box";
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, AlurakutStyles, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
+import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations'; 
 import { useEffect, useState } from "react";
 import ImagesList from "../src/components/ImagesList";
 
 import images from '../images.json';
 import BoxContent from "../src/components/BoxContent";
-import { ProfileRelationsBoxWrapper } from "../src/components/ProfileRelations";
 
 function ProfileSidebar({ avatar, name, user }) {
   return (
@@ -18,26 +18,17 @@ function ProfileSidebar({ avatar, name, user }) {
 }
 
 export default function Home() {
-  // const usuarioAleatorio = 'llofyy';
-  const pessoasFavoritas = [
-    'luizomf', 
-    'rafaballerini', 
-    'marcobrunodev', 
-    'maykbrito', 
-    'filipedeschamps', 
-    'diego3g'
-  ];
   
   const [comunidades, setComunidades] = useState([{title: 'Eu odeio acordar cedo', image: 'https://img10.orkut.br.com/community/52cc4290facd7fa700b897d8a1dc80aa.jpg'}]);
-  const [userData, setUserData] = useState({login: 'llofyy'});
+  const [userData, setUserData] = useState({});
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
+  const [ requestStatus, setRequestStatus ] = useState(true);
 
   const [imageListShow, setImageListShow] = useState(false);
   const [urlValue, setUrlValue] = useState('');
   const [nomeDoUsuario, setNomeDoUsuario] = useState('');
   const [usuarioAleatorio, setUsuarioAleatorio] = useState('llofyy');
-  const [requestOk, setRequestOk] = useState(true)
 
   useEffect(() => {
     async function handleLoadFollowersAndFollowing() {
@@ -67,10 +58,13 @@ export default function Home() {
     async function handleUserData() {
       await fetch(`https://api.github.com/users/${usuarioAleatorio}`)
       .then(data => {
-        setRequestOk(data.ok);
         if(data.ok) {
+          setRequestStatus(true);
           return data.json();
         }
+
+        setRequestStatus(false)
+
         throw new Error('Usuário não existe.');
       })
       .then(data => setUserData(data))
@@ -89,10 +83,10 @@ export default function Home() {
 
   return (
     <>
-    <AlurakutMenu githubUser={userData.login} />
+    <AlurakutMenu githubUser={usuarioAleatorio} />
     <MainGrid>
       <div className="profileArea" style={{gridArea: "profileArea"}}>
-       <ProfileSidebar avatar={userData.login} name={userData.name} user={userData.login} />
+       <ProfileSidebar avatar={usuarioAleatorio} name={userData.name} user={usuarioAleatorio} />
       </div>
       <div className="welcomeArea" style={{gridArea: "welcomeArea"}}>
         <Box>
@@ -116,13 +110,13 @@ export default function Home() {
                 aria-label="Adicione o @ do usuário"
                 type="text"
                 value={nomeDoUsuario}
-                onChange={(e) => setNomeDoUsuario(e.target.value)}
+                onChange={(e) => setNomeDoUsuario(e.target.value)} 
               />
 
               <button onClick={() => nomeDoUsuario === '' ? setUsuarioAleatorio('llofyy') : setUsuarioAleatorio(nomeDoUsuario)} style={{ marginBottom: "10px" }}>
                   Mudar usuário
               </button>
-              {requestOk ? '' : <p style={{ color: "red" }}>Usuário não encontrado!</p>}
+              {requestStatus ? '' : <p style={{ color: "red" }}>Usuário não encontrado.</p>}
             </div>
             <hr />
           <form onSubmit={e => {
@@ -196,7 +190,6 @@ export default function Home() {
             })}
           </ul>
         </ProfileRelationsBoxWrapper>
-
       </div>
     </MainGrid>
     </>
