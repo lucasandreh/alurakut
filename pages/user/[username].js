@@ -1,16 +1,14 @@
-import MainGrid from "../src/components/MainGrid";
-import Box from "../src/components/Box";
-import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
-import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations'; 
+import MainGrid from "../../src/components/MainGrid";
+import Box from "../../src/components/Box";
+import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../../src/lib/AlurakutCommons';
+import { ProfileRelationsBoxWrapper } from '../../src/components/ProfileRelations'; 
 import { useEffect, useState } from "react";
-import ImagesList from "../src/components/ImagesList";
 
 import nookies from 'nookies';
-import jwt from 'jsonwebtoken';
 
-import images from '../images.json';
-import BoxContent from "../src/components/BoxContent";
-import Repositories from "../src/components/Repositories";
+import BoxContent from "../../src/components/BoxContent";
+import Repositories from "../../src/components/Repositories";
+import { useRouter } from "next/dist/client/router";
 
 function ProfileSidebar({ avatar, name, user }) {
   return (
@@ -21,15 +19,17 @@ function ProfileSidebar({ avatar, name, user }) {
   )
 }
 
-export default function Home({ githubUser }) {
+export default function Home() {
+
+    const router = useRouter()
+    const { username } = router.query;
   
-  const usuarioAleatorio = githubUser;
+  const usuarioAleatorio = username;
 
   const [comunidades, setComunidades] = useState([]);
   const [userData, setUserData] = useState({});
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
-  const [ requestStatus, setRequestStatus ] = useState(true);
 
   const [repositories, setRepositories] = useState([]);
 
@@ -73,11 +73,7 @@ export default function Home({ githubUser }) {
         throw new Error('Usuário não existe.');
       })
       .then(data => setUserData(data))
-      .catch(err => {
-        alert(`${usuarioAleatorio} não foi econtrado.`)
-        nookies.destroy(null, "USER_TOKEN");
-        window.location.href = "/"
-      });
+      .catch(err => {});
     }
  
     async function handleGetCommunities() {
@@ -121,11 +117,6 @@ export default function Home({ githubUser }) {
     handleLoadRepositories();
   }, [usuarioAleatorio]);
 
-  function handleShowImageList(e) {
-    e.preventDefault();
-    setImageListShow(!imageListShow);
-  }
-
   return (
     <>
     <AlurakutMenu githubUser={usuarioAleatorio} />
@@ -136,7 +127,6 @@ export default function Home({ githubUser }) {
       <div className="welcomeArea" style={{gridArea: "welcomeArea"}}>
         <Box>
           <h1 className="title">
-            Bem Vindo(a), {userData.name}
             <p style={{
               marginTop: "20px",
               fontSize: "16px",
@@ -145,68 +135,9 @@ export default function Home({ githubUser }) {
             <OrkutNostalgicIconSet />
           </h1>
         </Box>
-           
-        <Box>
-          <h2 className="subTitle">O que você deseja fazer?</h2>
-          <form onSubmit={e => {
-            e.preventDefault();
-            const dadosDoForm = new FormData(e.target);
-            fetch('/api/comunidades', {
-              method: "POST",
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                title: dadosDoForm.get('title'),
-                imageUrl: dadosDoForm.get('image'),
-                creatorSlug: usuarioAleatorio
-              })
-            }).then(async response => {
-              const respostaConvertida = await response.json();
-              setComunidades([...comunidades, respostaConvertida.registroCriado]);
-            })
-          }}>
-            <div>
-              <input 
-                placeholder="Qual vai ser o nome da comunidade?" 
-                name="title" 
-                aria-label="Qual vai ser o nome da comunidade?"
-                type="text" 
-              />
-            </div>
-            <div>
-              <input 
-                placeholder="Coloque uma URL para usarmos de capa" 
-                name="image" 
-                aria-label="Coloque uma URL para usarmos de capa"
-                type="text"
-                onChange={(e) => setUrlValue(e.target.value)}
-                value={urlValue} 
-              />
-            </div>
-            <button>
-              Criar comunidade
-            </button>
-            <button onClick={handleShowImageList} style={{ marginLeft: "10px" }}>
-              {!imageListShow ? 'Mostrar lista de imagens' : 'Esconder lista de imagens'}
-            </button>
-          </form>
-        </Box>
-        {!imageListShow ? '' : 
-          <Box>
-            <h2 className="subTitle">Escolha uma imagem padrão para sua comunidade:</h2>
-            <ImagesList>
-            {images.map(image => {
-                return (
-                    <img key={image} onClick={e => setUrlValue(e.target.src)} src={image} alt="Imagem padrão de comunidade"/>
-                )
-            })}
-            </ImagesList>
-          </Box>
-        }
 
           <Box>
-            <h2 className="subTitle">Seus repositórios públicos:</h2>
+            <h2 className="subTitle">Repositórios públicos de {usuarioAleatorio}:</h2>
             <Repositories items={repositories} user={usuarioAleatorio} />
           </Box>
       </div>
@@ -237,25 +168,4 @@ export default function Home({ githubUser }) {
     </MainGrid>
     </>
   )
-}
-
-export async function getServerSideProps(context) {
-  const cookies = nookies.get(context)
-  const token = cookies.USER_TOKEN;
-
-  if(!token) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false      
-      }
-    }
-  }
-
-  const { githubUser } = jwt.decode(token);
-  return {
-    props: {
-      githubUser
-    }, // will be passed to the page component as props
-  }
 }

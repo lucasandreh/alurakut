@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import NextLink from 'next/link';
 
@@ -20,7 +20,10 @@ function Link({ href, children, ...props }) {
 // Menu
 // ================================================================================================================
 export function AlurakutMenu({ githubUser }) {
-  const [isMenuOpen, setMenuState] = React.useState(false);
+  const [isMenuOpen, setMenuState] = useState(false);
+  const [username, setUsername] = useState('')
+  const [requestStatus, setRequestStatus] = useState(false);
+  const [usuarioEncontrado, setUsuarioEncontrado] = useState({});
   return (
     <AlurakutMenu.Wrapper isMenuOpen={isMenuOpen}>
       <div className="container">
@@ -39,7 +42,27 @@ export function AlurakutMenu({ githubUser }) {
             Sair
           </a>
           <div>
-            <input placeholder="Pesquisar no Orkut" />
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+
+                await fetch(`https://api.github.com/users/${formData.get('userSearch')}`)
+                .then(response => {
+                  setRequestStatus(response.ok)
+                  return response.json();
+                })
+                .then(formatedResponse => setUsuarioEncontrado(formatedResponse))
+                .catch(err => console.log(err))
+              }}
+            >
+              <input placeholder="Pesquisar no Orkut" name="userSearch" onChange={e => setUsername(e.target.value)} value={username} />
+              {requestStatus ? 
+              <div className="searchContainer">
+                <img src={`https://github.com/${usuarioEncontrado.login}.png`} />
+                <p onClick={() => window.location.href = `/user/${usuarioEncontrado.login}`} href={`https://github.com/${usuarioEncontrado.login}`} target="_blank">{usuarioEncontrado.login}</p>
+              </div> : ''}
+            </form>
           </div>
         </nav>
 
@@ -156,11 +179,45 @@ AlurakutMenu.Wrapper = styled.header`
       background-repeat: no-repeat;
       border-radius: 1000px;
       font-size: 12px;
+      position: relative;
       ::placeholder {
         color: #ffffff;
         opacity: 1;
       }
-    } 
+    }
+    
+    .searchContainer {
+      position: absolute;
+      width: 230px;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-radius: 8px;
+      gap: 10px;
+      -webkit-box-shadow: 5px 5px 30px -1px #000000; 
+      box-shadow: 5px 5px 30px -1px #000000;
+
+      img {
+        max-width: 40px;
+        max-height: 40px;
+        border-radius: 100%;
+        padding: 0;
+      }
+
+      p {
+        font-weight: 700;
+        color: #2E7BB4;
+        font-size: 18px;
+        margin: 0;
+        padding: 0;
+        cursor: pointer;
+      }
+
+      button {
+        background-color: red;
+      }
+    }
   }
 `;
 AlurakutMenu.Logo = styled.img`
