@@ -1,4 +1,5 @@
-import { ProfileRelationsBoxWrapper } from '../ProfileRelations'; 
+import { ProfileRelationsBoxWrapper } from '../ProfileRelations';
+import Link from 'next/link'; 
 
 export default function BoxContent({ title, items, user }) {
     return (
@@ -10,10 +11,12 @@ export default function BoxContent({ title, items, user }) {
             {items.map(pessoa => {
               return (
                 <li key={pessoa.id}>
-                  <a href={`https://github.com/${pessoa.login}`} target="_blank">
-                  <img src={`https://github.com/${pessoa.login}.png`} />
-                  <span>{pessoa.login}</span>
-                </a>
+                  <Link href={`/users/${pessoa.login}`}>
+                    <a>
+                      <img src={`https://github.com/${pessoa.login}.png`} />
+                      <span>{pessoa.login}</span>
+                    </a>
+                  </Link>
                 </li>
               )
             })}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 // Hook do NextJS
 import { useRouter } from 'next/router';
 import nookies from 'nookies';
+import Head from 'next/head';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -19,6 +20,10 @@ export default function LoginScreen() {
 // }
 
   return (
+    <>
+    <Head>
+      <title>Alurakut</title>
+    </Head>
     <main style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <div className="loginScreen">
         <section className="logoArea">
@@ -85,5 +90,6 @@ export default function LoginScreen() {
         </footer>
       </div>
     </main>
+    </>
   )
 } 

@@ -60,7 +60,7 @@ export function AlurakutMenu({ githubUser }) {
               {requestStatus ? 
               <div className="searchContainer">
                 <img src={`https://github.com/${usuarioEncontrado.login}.png`} />
-                <p onClick={() => window.location.href = `/user/${usuarioEncontrado.login}`} href={`https://github.com/${usuarioEncontrado.login}`} target="_blank">{usuarioEncontrado.login}</p>
+                <p onClick={() => window.location.href = `/users/${usuarioEncontrado.login}`} href={`https://github.com/${usuarioEncontrado.login}`} target="_blank">{usuarioEncontrado.login}</p>
               </div> : ''}
             </form>
           </div>

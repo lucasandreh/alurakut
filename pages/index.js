@@ -4,6 +4,7 @@ import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet 
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations'; 
 import { useEffect, useState } from "react";
 import ImagesList from "../src/components/ImagesList";
+import Head from 'next/head';
 
 import nookies from 'nookies';
 import jwt from 'jsonwebtoken';
@@ -29,7 +30,6 @@ export default function Home({ githubUser }) {
   const [userData, setUserData] = useState({});
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
-  const [ requestStatus, setRequestStatus ] = useState(true);
 
   const [repositories, setRepositories] = useState([]);
 
@@ -119,7 +119,7 @@ export default function Home({ githubUser }) {
     handleUserData();
     handleGetCommunities();
     handleLoadRepositories();
-  }, [usuarioAleatorio]);
+  }, []);
 
   function handleShowImageList(e) {
     e.preventDefault();
@@ -128,6 +128,9 @@ export default function Home({ githubUser }) {
 
   return (
     <>
+    <Head>
+      <title>Alurakut | {usuarioAleatorio}</title>
+    </Head>
     <AlurakutMenu githubUser={usuarioAleatorio} />
     <MainGrid>
       <div className="profileArea" style={{gridArea: "profileArea"}}>

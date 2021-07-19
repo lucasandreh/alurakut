@@ -4,11 +4,11 @@ import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet 
 import { ProfileRelationsBoxWrapper } from '../../src/components/ProfileRelations'; 
 import { useEffect, useState } from "react";
 
-import nookies from 'nookies';
-
 import BoxContent from "../../src/components/BoxContent";
 import Repositories from "../../src/components/Repositories";
 import { useRouter } from "next/dist/client/router";
+
+import Head from 'next/head';
 
 function ProfileSidebar({ avatar, name, user }) {
   return (
@@ -32,9 +32,6 @@ export default function Home() {
   const [following, setFollowing] = useState([]);
 
   const [repositories, setRepositories] = useState([]);
-
-  const [imageListShow, setImageListShow] = useState(false);
-  const [urlValue, setUrlValue] = useState('');
 
   const token = "6153afb9f1143958ccc7a1b054b4e1";
 
@@ -119,6 +116,9 @@ export default function Home() {
 
   return (
     <>
+    <Head>
+      <title>Alurakut | {usuarioAleatorio}</title>
+    </Head>
     <AlurakutMenu githubUser={usuarioAleatorio} />
     <MainGrid>
       <div className="profileArea" style={{gridArea: "profileArea"}}>
